@@ -2,9 +2,9 @@
 setlocal
 
 REM ================== DEFAULT CONFIGURATION ==================
-set "folder=C:\Program Files\Altair" :: The default folder path
-set "recursive=1"                    :: Enable recursion into subfolders by default
-set "testing=0"                      :: Only display, not kill by default
+set "folder=C:\Program Files\Altair" :: The folder path to search processes
+set "recursive=1"                    :: Enable recursion into subfolders
+set "testing=0"                      :: Only display, not kill
 REM =============================================================
 
 REM ============= OPTIONNAL ARGS, ERASE DEFAULT =================
