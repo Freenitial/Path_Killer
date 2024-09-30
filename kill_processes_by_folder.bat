@@ -2,7 +2,7 @@
 setlocal
 
 REM ================== DEFAULT CONFIGURATION ==================
-set "folder=C:\Program Files" :: The folder path to search processes
+set "folder=C:\Program Files"        :: The folder path to search processes
 set "recursive=1"                    :: Enable recursion into subfolders
 set "testing=0"                      :: Only display, not kill
 REM =============================================================
