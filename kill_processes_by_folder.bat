@@ -22,9 +22,9 @@ REM ================== ARGUMENTS HANDLING =====================
 
 :parse_args
 if "%~1"=="" goto :after_args
-if /i "%~1"=="/folder" (set "folder=%~2" & shift & shift & goto :parse_args)
+if /i "%~1"=="/folder"    (set "folder=%~2"    & shift & shift & goto :parse_args)
 if /i "%~1"=="/recursive" (set "recursive=%~2" & shift & shift & goto :parse_args)
-if /i "%~1"=="/testing" (set "testing=%~2" & shift & shift & goto :parse_args)
+if /i "%~1"=="/testing"   (set "testing=%~2"   & shift & shift & goto :parse_args)
 goto :parse_args
 :after_args
 
