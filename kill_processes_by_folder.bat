@@ -2,7 +2,7 @@
 
 
 
-REM ======================= TUTORIAL =========================
+REM ======================= TUTORIAL ==========================
 
 REM (optionnal) CALL WITH 1-3 ARGS TO REPLACE CORRESPONDING DEFAULT CONFIG
 REM How to call with 3 args : kill_processes_by_folder.bat /folder "C:\Program Files" /recursive 1 /testing 0
@@ -10,15 +10,15 @@ REM If you call with 0 args : full default config below applied
 
 
 
-REM ================== DEFAULT CONFIGURATION ==================
+REM ================= DEFAULT CONFIGURATION ====================
 
-set "folder=C:\Program Files\myfolder" :: Predefined folder path
+set "folder=C:\Program Files"   :: Predefined folder path
 set "recursive=1"                      :: Enable recursion into subfolders
 set "testing=0"                        :: Only display, not kill
 
 
 
-REM ================== ARGUMENTS HANDLING =====================
+REM =============== OPTIONNAL ARGUMENTS HANDLING ===============
 
 :parse_args
 if "%~1"=="" goto :after_args
