@@ -12,7 +12,7 @@ REM If you call with 0 args : full default config below applied
 
 REM ================= DEFAULT CONFIGURATION ====================
 
-set "folder=C:\Program Files"   :: Predefined folder path
+set "folder=C:\Program Files"          :: Predefined folder path
 set "recursive=1"                      :: Enable recursion into subfolders
 set "testing=0"                        :: Only display, not kill
 
