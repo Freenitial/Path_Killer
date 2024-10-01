@@ -44,6 +44,8 @@ if "%recursive%"=="1" (
     set "filter={$_.ExecutablePath -like '%folder%\*' -and (Split-Path $_.ExecutablePath -Parent) -eq '%folder%'}"
 )
 
+REM (Compatibility) Using "WMI" below instead of "Get-Process" to keep all user processes visible by system account / sccm
+
 if "%testing%"=="1" (
     echo Testing mode is enabled. No action will be performed.
     powershell -NoProfile -ExecutionPolicy Bypass -Command ^
