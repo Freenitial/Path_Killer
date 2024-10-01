@@ -1,62 +1,57 @@
-@echo off
-setlocal
+@echo off & setlocal
+
+
+
+REM ======================= TUTORIAL =========================
+
+REM (optionnal) CALL WITH 1-3 ARGS TO REPLACE CORRESPONDING DEFAULT CONFIG
+REM How to call with 3 args : kill_processes_by_folder.bat /folder "C:\Program Files" /recursive 1 /testing 0
+REM If you call with 0 args : full default config below applied
+
+
 
 REM ================== DEFAULT CONFIGURATION ==================
-set "folder=C:\Program Files"        :: The folder path to search processes
-set "recursive=1"                    :: Enable recursion into subfolders
-set "testing=0"                      :: Only display, not kill
-REM =============================================================
 
-REM ============= OPTIONNAL ARGS, ERASE DEFAULT =================
+set "folder=C:\Program Files\myfolder" :: Predefined folder path
+set "recursive=1"                      :: Enable recursion into subfolders
+set "testing=0"                        :: Only display, not kill
+
+
+
+REM ================== ARGUMENTS HANDLING =====================
+
 :parse_args
 if "%~1"=="" goto :after_args
-if /i "%~1"=="/folder" (
-    set "folder=%~2"
-    shift
-    shift
-    goto :parse_args
-)
-if /i "%~1"=="/recursive" (
-    set "recursive=%~2"
-    shift
-    shift
-    goto :parse_args
-)
-if /i "%~1"=="/testing" (
-    set "testing=%~2"
-    shift
-    shift
-    goto :parse_args
-)
+if /i "%~1"=="/folder" (set "folder=%~2" & shift & shift & goto :parse_args)
+if /i "%~1"=="/recursive" (set "recursive=%~2" & shift & shift & goto :parse_args)
+if /i "%~1"=="/testing" (set "testing=%~2" & shift & shift & goto :parse_args)
 goto :parse_args
-
 :after_args
-REM =============================================================
+
+
+
+REM ===================== EXECUTION =============================
 
 if not exist "%folder%" (
-    echo The folder "%folder%" does not exist.
-    pause
-    exit /b 1
+    echo Folder not found : "%folder%"
+    timeout /t 2 >nul
+    exit /b 0
 )
 
 if "%recursive%"=="1" (
-    set "filter={$_.Path -like '%folder%\*'}"
+    set "filter={$_.ExecutablePath -like '%folder%\*'}"
 ) else (
-    set "filter={$_.Path -like '%folder%\*' -and (Split-Path $_.Path -Parent) -eq '%folder%'}"
+    set "filter={$_.ExecutablePath -like '%folder%\*' -and (Split-Path $_.ExecutablePath -Parent) -eq '%folder%'}"
 )
 
 if "%testing%"=="1" (
-    powershell -NoProfile -ExecutionPolicy Bypass -Command "Get-Process | Where-Object %filter% | Select-Object Id, Path"
-    echo.
-    echo Testing mode is enabled. No action has been performed.
+    echo Testing mode is enabled. No action will be performed.
+    powershell -NoProfile -ExecutionPolicy Bypass -Command ^
+        "Get-WmiObject Win32_Process | Where-Object %filter% | Select-Object -Property ProcessId, Name, ExecutablePath"
     pause
 ) else (
-    powershell -NoProfile -ExecutionPolicy Bypass -Command "Get-Process | Where-Object %filter% | ForEach-Object { taskkill /PID $_.Id /F }"
-    if "%recursive%"=="1" (
-        echo All processes related to the folder "%folder%" and its subfolders have been terminated.
-    ) else (
-        echo All processes related to the folder "%folder%" only have been terminated.
-    )
+    powershell -NoProfile -ExecutionPolicy Bypass -Command ^
+        "Get-WmiObject Win32_Process | Where-Object %filter% | ForEach-Object { taskkill /PID $_.ProcessId /F }"
 )
 
-endlocal
+exit /b 0
