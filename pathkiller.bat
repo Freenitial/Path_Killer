@@ -1,9 +1,12 @@
 @echo off & chcp 65001 >nul & setlocal
 
 
-REM ======================= TUTORIAL ==========================
+::------------------------------------------------------------::
+::    Kill any process located into specified folder paths    ::
+::------------------------------------------------------------::
 
-:: __ Kill any process located into specified folder paths __ ::
+
+REM ======================= TUTORIAL ==========================
 
 REM (optionnal) CALL WITH ARGS TO REPLACE CORRESPONDING DEFAULT CONFIG (/folder can be used many times)
 REM How to call with args : pathkiller.bat /folder "C:\first\path" /folder "C:\second path" /testing 1
