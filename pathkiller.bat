@@ -6,7 +6,7 @@ REM ======================= TUTORIAL ==========================
 :: __ Kill any process located into specified folder paths __ ::
 
 REM (optionnal) CALL WITH ARGS TO REPLACE CORRESPONDING DEFAULT CONFIG (/folder can be used many times)
-REM How to call with args : pathkiller.bat /folder "C:\first\folder" /folder "C:\second folder" /recursive 1 /testing 0
+REM How to call with args : pathkiller.bat /folder "C:\first\folder" /folder "C:\second folder" /testing 1
 REM If you call without any args : full default config below applied
 
 
