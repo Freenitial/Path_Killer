@@ -13,9 +13,9 @@ REM If you call without any arg : full default config below applied
 
 REM ================= DEFAULT CONFIGURATION ====================
 
-set "folders="C:\first\path";"C:\second path""   :: List of paths formated like this
-set "recursive=1"                                    :: Enable recursion into subfolders
-set "testing=0"                                      :: Only display, not kill
+set "folders="C:\first\path";"C:\second path""     :: List of paths formated like this
+set "recursive=1"                                  :: Enable recursion into subfolders
+set "testing=0"                                    :: Only display, not kill
 
 
 
