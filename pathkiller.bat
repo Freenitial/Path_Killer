@@ -63,7 +63,6 @@ if not defined filter (
 )
 
 REM (Compatibility) Using "WMI" below instead of "Get-Process" to keep all user processes visible by system account / SCCM
-
 if "%testing%"=="1" (
     echo Testing mode is enabled. No action will be performed.
     echo %%filter%% = %filter%
