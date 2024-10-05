@@ -77,7 +77,7 @@ REM ====================== ENDING ===============================
 
 :end
 if not defined returncode set "returncode=1" & echo NOT any matching process found. 
-echo _debug_  %%returncode%% = %returncode% & pause
+:: echo _debug_  %%returncode%% = %returncode% & pause
 echo ------------------------------------------------------------ & echo.
 endlocal & exit /b 0
 REM You can do "exit /b %returncode%" to handle cases
