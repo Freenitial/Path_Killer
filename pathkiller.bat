@@ -15,7 +15,7 @@ set "verysilent=0"                                 :: Hide everything
 set "logs=1"                                       :: Enable writting logs
 set "logfile=%temp%\pathkiller.log"                :: logs location
 
-REM  %temp% from user/admin = %localappdata%\Temp  :: %temp% from system account = C:\Windows\Temp
+REM %temp% openas user/admin = %localappdata%\Temp :: %temp% opened as system account = C:\Windows\Temp
 
 
 
