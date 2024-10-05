@@ -64,13 +64,11 @@ REM (Compatibility) Using "WMI" below instead of "Get-Process" to keep all user 
 if "%testing%"=="1" (
     :: echo _debug_ %%filter%% = %filter%
     powershell -NoProfile -ExecutionPolicy Bypass -Command ^
-        "try{((Get-WmiObject Win32_Process | Where-Object { %filter% } | Select-Object -Property ProcessId, Name, ExecutablePath)[0])}catch{exit 1}" ^
-         || echo -testing mode- NOT any matching process found. && set "returncode=1"
+        "try{((Get-WmiObject Win32_Process | Where-Object { %filter% } | Select-Object -Property ProcessId, Name, ExecutablePath)[0])}catch{exit 1}" && set "returncode=0"
     pause
 ) else (
     powershell -NoProfile -ExecutionPolicy Bypass -Command ^
-        "try{((Get-WmiObject Win32_Process | Where-Object { %filter% } | ForEach-Object { taskkill /PID $_.ProcessId /F })[0])}catch{exit 1}" >nul ^
-         || echo NOT any matching process found. && set "returncode=1"
+        "try{((Get-WmiObject Win32_Process | Where-Object { %filter% } | ForEach-Object { taskkill /PID $_.ProcessId /F })[0])}catch{exit 1}" >nul && set "returncode=0"
 )
 
 
@@ -78,8 +76,8 @@ if "%testing%"=="1" (
 REM ====================== ENDING ===============================
 
 :end
-if not defined returncode set "returncode=0"
-::echo _debug_  %%returncode%% = %returncode% & pause
+if not defined returncode set "returncode=1" & echo NOT any matching process found. 
+echo _debug_  %%returncode%% = %returncode% & pause
 echo ------------------------------------------------------------ & echo.
 endlocal & exit /b 0
 REM You can do "exit /b %returncode%" to handle cases
