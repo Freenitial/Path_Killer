@@ -16,7 +16,7 @@ Be careful if you provide any /folder arguments, the first one will reset this v
 
 **Here is supported args**:
 ```
-/folder  "C:\give\a\path"        : A folder to kill processes from. You can use this argument many times
+/folder  "C:\give\a\path"        : A folder to kill processes from. **You can use this argument many times**
 /logpath "%temp%\pathkiller.log" : Log file location
 
 /logs               1 (or 0)     : Enable logs
