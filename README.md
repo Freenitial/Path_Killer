@@ -59,7 +59,7 @@ Return codes
 2 = %folders% value is null (check if your args are correctly given, otherwise if default is correctly set)
 3 = No valid filter created (check if your args are correctly given)
 4 = Failed to close some processes
-5 = Unrecognized argument
+5 = Argument not recognized
 ```
 
 --------------------
