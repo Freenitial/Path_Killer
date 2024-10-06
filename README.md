@@ -3,26 +3,30 @@
 |   Kill any process located into specified folder paths   |
 
 --------------------
-Optionnal : call with args to replace the default config below
 
-Here is supported args:
+### Optionnal : call with args to replace the default config below
+
+**Here is supported args**:
 ```
 /folder     "C:\give\a\path" : A folder to kill processes from. You can use this argument may times
-/recursive          0 (or 1) : Enable recursive search into subfolders
+/logfile    "C:\give\a\path" : Logs location
+/logs               1 (or 0) : Enable logs
+/recursive          1 (or 0) : Enable recursive search into subfolders
 /checkonly          0 (or 1) : Not kill + show return code + pause
 /test               0 (or 1) : Kill + show return code + pause
 /disablereturncodes 0 (or 1) : Activate if you want to return 0 everytime
 /silent             0 (or 1) : Hide text output from taskkill commands
 /verysilent         0 (or 1) : Hide everything
-/logs               0 (or 1) : Enable writting logs
-/logfile            0 (or 1) : Logs location
+                    |     |
+         Default <--'     '--> You can replace in the file / or give argument to replace
 ```
---------------------
 
-How to call with args : pathkiller.bat /folder "C:\first\path" /folder "C:\second path" /test 1
+**How to call with args** : 
+```
+pathkiller.bat /folder "C:\first\path" /folder "C:\second path" /test 1
+```
 
---------------------
-How to call properly from another batch : 
+**How to call properly from another batch** : 
 ```
 call pathkiller.bat /folder "C:\Program Files\Mozilla" ^
                     /folder "%programfiles%\Google\Chrome" ^
@@ -34,12 +38,15 @@ call pathkiller.bat /folder "C:\Program Files\Mozilla" ^
                     /logs 1 ^
                     /logfile "C:\Windows\Temp"
 ```
+
 --------------------
 
 How to preformat folders list inside the script if you don't want give /folder arguments :
 ```
 set "folders="C:\first\path";"C:\second path";"C:\third\path""
 ```
+
+--------------------
 
 Return codes
 ```
