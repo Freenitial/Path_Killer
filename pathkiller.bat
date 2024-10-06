@@ -72,7 +72,6 @@ if /i "%~1"=="/logs"                (set "logs=%~2"               & shift & shif
 if /i "%~1"=="/logpath"             (set "logpath=%~2"            & shift & shift & goto :parse_args)
 if /i "%~1"=="/retry"               (set "retry=%~2"              & shift & shift & goto :parse_args)
 REM We hit this point if an argument is not recognized
-if "%verysilent%" neq "1" echo [Error] Code %returncode% - Argument not recognized : %~1
 set "returncode=5"
 :after_args
 if "%verysilent%"=="1" set "silent=1"
@@ -113,12 +112,18 @@ if "%logs%"=="1" (
         ) else (
             echo             because value of %%logpath%% seems to be empty or wrong : "%logpath%"  >> "!logpath!"
         )
-        if "%returncode%"=="5" (echo [Error] Code %returncode% - Argument not recognized : %~1 >> "!logpath!" & goto :end)
     )
     rmdir "!testDir!" >nul 2>&1
 )
 
 if "%verysilent%"=="0" (echo  =================   PATH KILLER START   ================== & echo.)
+
+if "%returncode%"=="5" (
+    if "%verysilent%" neq "1" echo [Error] Code %returncode% - Argument not recognized : %~1
+    echo [Error] Code %returncode% - Argument not recognized : %~1 >> "!logpath!"
+    goto :end
+)
+
 set "doublecheckfile=%temp%\pathkiller_doublecheck.txt"
 del /f "%doublecheckfile%" >nul 2>&1
 
@@ -203,8 +208,8 @@ REM   ====================== ENDING ===============================
 :end
 if not defined returncode set "returncode=1"
 
-if "%verysilent%" neq "1" (
-    echo.
+if "%verysilent%" neq "1" echo.
+if "%verysilent%" neq "1" if "%returncode%" neq "5" (
     if "%returncode%"=="0" if "%checkonly%"=="0" echo  RESULT Code %returncode% : All processes have been killed.
     if "%returncode%"=="0" if "%checkonly%"=="1" echo  RESULT Code %returncode% : Matching processes found.
     if "%returncode%"=="1"                       echo  RESULT Code %returncode% : Not any matching process found.
@@ -212,9 +217,9 @@ if "%verysilent%" neq "1" (
     if "%returncode%"=="3"                       echo  RESULT Code %returncode% : [Error] - No valid folder filter created.
     if "%returncode%"=="4" if "%silent%"=="0"    echo  RESULT Code %returncode% : [Error] - Failed to close those processes : & type "%doublecheckfile%"
     if "%returncode%"=="4" if "%silent%"=="1"    echo  RESULT Code %returncode% : [Error] - Failed to close some processes.
-    if "%disablereturncodes%"=="1"               echo 'disablereturncodes' is enabled so this script will return 0 anyway
     echo.
 )
+
 
 if "%logs%"=="1" ((
     echo VARIABLES AT END :
@@ -233,11 +238,12 @@ if "%logs%"=="1" ((
     if "%disablereturncodes%"=="1"               echo 'disablereturncodes' is enabled so this script will return 0 anyway
     echo -
 )) >> "%logpath%"
-del /f "%doublecheckfile%" >nul 2>&1
 
+if defined doublecheckfile del /f "%doublecheckfile%" >nul 2>&1
+if "%disablereturncodes%"=="1" (echo 'disablereturncodes' is enabled so this script will return 0 anyway & echo. & set "returncode=0")     
 if "%verysilent%" neq "1" (echo  --------------------  PATH KILLER END  ------------------- & echo.)
 echo -------------------------  [END] ------------------------- >> "%logpath%" & echo - >> "%logpath%" & echo - >> "%logpath%" & echo - >> "%logpath%" & echo - >> "%logpath%"
 
 if "%endpause%"=="1" pause
-if "%disablereturncodes%"=="1" set "returncode=0"
+      
 exit /b %returncode%
