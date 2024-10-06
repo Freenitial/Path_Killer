@@ -21,7 +21,7 @@ Be careful if you provide any /folder arguments, the first one will reset this v
 
 /logs               1 (or 0)     : Enable logs
 /recursive          1 (or 0)     : Enable recursive search into subfolders
-/retry              1 (or 1)     : Kill again if processes still runing (max 3 attemps, 2s loop)
+/retry              1 (or 0)     : Kill again if processes still runing (max 3 attemps, 2s loop)
 /checkonly          0 (or 1)     : Not kill + show return code + pause
 /endpause           0 (or 1)     : Pause at the end
 /disablereturncodes 0 (or 1)     : Activate if you want to return 0 everytime
