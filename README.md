@@ -25,7 +25,7 @@ set "folders="C:\first\path";"C:\second path";"C:\third\path""
 /silent             0 (or 1)     : Hide text output from taskkill commands
 /verysilent         0 (or 1)     : Hide everything
                     |     |
-         Default <--'     '--> You can replace in the file / or give argument to replace
+         Default <--'     '--> You can replace in the file / or give corresponding argument to replace
 ```
 
 **How to call with args** : 
