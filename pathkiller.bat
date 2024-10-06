@@ -15,12 +15,13 @@ REM   ================= DEFAULT CONFIGURATION ====================
 
 set "folders="C:\first\path";"C:\second path""     :: List of paths formated like this
 set "logpath=%temp%\pathkiller.log"                :: Logs location
-set "logs=1"                                       :: Enable writting logs
-set "recursive=1"                                  :: Enable recursive search into subfolders
-set "checkonly=0"                                  :: Not kill + show return code + pause
-set "test=0"                                       :: Kill + show return code + pause
-set "disablereturncodes=0"                         :: Activate if you want to finally return 0 everytime
-set "silent=0"                                     :: Hide text output from taskkill commands
+set "logs=1"                                       :: Write logs
+set "recursive=1"                                  :: Search into subfolders
+set "retry=1"                                      :: Kill again if processes still runing (max 3 attemps, 2s loop)
+set "checkonly=0"                                  :: Only search processes without killing
+set "endpause=0"                                   :: Pause at the end
+set "disablereturncodes=0"                         :: Final return '0' everytime
+set "silent=1"                                     :: Hide text output from taskkill commands
 set "verysilent=0"                                 :: Hide everything
 
 
@@ -29,7 +30,7 @@ set "verysilent=0"                                 :: Hide everything
 REM   ======================= TUTORIAL ==========================
 
 REM (optionnal) CALL WITH ARGS TO REPLACE CORRESPONDING DEFAULT CONFIG ABOVE (/folder can be used many times)
-REM How to call with args : pathkiller.bat /folder "C:\first\path" /folder "C:\second path" /test 1
+REM How to call with args : pathkiller.bat /folder "C:\first\path" /folder "C:\second path" /endpause 1
 REM If you call this script without any arg : full default config above applied
 
 REM Return codes 
@@ -40,7 +41,7 @@ REM Return codes
 ::     4 = Failed to close some processes
 ::     5 = Unrecognized argument
 
-REM  %temp% from user/admin = %localappdata%\Temp  :: %temp% from system account = %windir%\Temp
+REM  %temp% from user/admin = %localappdata%\Temp  ::  %temp% from system account = %windir%\Temp
 
 
 
@@ -57,21 +58,24 @@ REM   =============== OPTIONAL ARGUMENTS HANDLING ===============
 :parse_args
 if "%~1"=="" goto :after_args
 if /i "%~1"=="/folder" (
-    if defined folders (set "folders=%folders%;"%~2"") else (set "folders="%~2"")
+    if defined resetedfolders (set "folders=%folders%;"%~2"") else (set "folders="%~2"")
+    set "resetedfolders=1"
     shift & shift & goto :parse_args
 )
 if /i "%~1"=="/recursive"           (set "recursive=%~2"          & shift & shift & goto :parse_args)
 if /i "%~1"=="/checkonly"           (set "checkonly=%~2"          & shift & shift & goto :parse_args)
-if /i "%~1"=="/test"                (set "test=%~2"               & shift & shift & goto :parse_args)
+if /i "%~1"=="/endpause"            (set "endpause=%~2"           & shift & shift & goto :parse_args)
 if /i "%~1"=="/disablereturncodes"  (set "disablereturncodes=%~2" & shift & shift & goto :parse_args)
 if /i "%~1"=="/silent"              (set "silent=%~2"             & shift & shift & goto :parse_args)
 if /i "%~1"=="/verysilent"          (set "verysilent=%~2"         & shift & shift & goto :parse_args)
 if /i "%~1"=="/logs"                (set "logs=%~2"               & shift & shift & goto :parse_args)
 if /i "%~1"=="/logpath"             (set "logpath=%~2"            & shift & shift & goto :parse_args)
+if /i "%~1"=="/retry"               (set "retry=%~2"              & shift & shift & goto :parse_args)
 REM We hit this point if an unrecognized argument is given
-if "verysilent" neq "1" echo Unrecognized argument : %~1
+if "%verysilent%" neq "1" echo Unrecognized argument : %~1
 set "returncode=5"
 :after_args
+if "%verysilent%"=="1" set "silent=1"
 
 
 
@@ -117,6 +121,7 @@ if "%logs%"=="1" (
 
 if "%verysilent%"=="0" (echo  ====================   PATH KILLER   ===================== & echo.)
 set "doublecheckfile=%temp%\pathkiller_doublecheck.txt"
+del /f "%doublecheckfile%" >nul 2>&1
 
 if "%logs%"=="1" if not defined alreadyheader ((
     echo -
@@ -128,7 +133,8 @@ if "%logs%"=="1" ((
     echo -
     echo VARIABLES AT BEGIN :
     echo folders = %folders%
-    echo recursive = %recursive% / checkonly = %checkonly% / test = %test% / disablereturncodes = %disablereturncodes% / silent = %silent% / verysilent = %verysilent% / logs = %logs%
+    echo logpath = %logpath%
+    echo [recursive = %recursive%] [retry = %retry%] [checkonly = %checkonly%] [endpause = %endpause%] [disablereturncodes = %disablereturncodes%] [silent = %silent%] [verysilent = %verysilent%]
     echo -
 )) >> "%logpath%"
    
@@ -147,25 +153,37 @@ REM Remove the trailing " -or " from the filter string
 set "filter=%filter:~0,-4%"
 if not defined filter (set "returncode=3" & goto :end)
 
-if "%verysilent%" neq "1" echo Looking for processes to kill...
+if "%verysilent%" neq "1" echo Searching processes...
+if "%logs%"=="1" echo Searching processes...   >> "%logpath%"
 powershell -NoProfile -ExecutionPolicy Bypass -Command ^
-    "try{((Get-WmiObject Win32_Process | Where-Object { %filter% } | Select-Object -Property ProcessId, Name, ExecutablePath)[0])}catch{exit 1}" >nul && set "checkok=1"
-if defined checkok (set "returncode=0") else (set "returncode=1" & goto :end)
-
-if "%silent%" neq "1" (
-    powershell -NoProfile -ExecutionPolicy Bypass -Command ^
-        "Get-WmiObject Win32_Process | Where-Object { %filter% } | Select-Object -Property ProcessId, Name, ExecutablePath" > "%doublecheckfile%"
-    if exist "%doublecheckfile%" type "%doublecheckfile%"
+    "Get-WmiObject Win32_Process | Where-Object { %filter% } | Select-Object -Property ProcessId, Name, ExecutablePath" > "%doublecheckfile%"
+for %%i in ("%doublecheckfile%") do if %%~zi NEQ 0 (
+    set "returncode=0"
+    if "%silent%" neq "1" type "%doublecheckfile%"
+    if "%logs%"=="1" type "%doublecheckfile%" >> "%logpath%"
+) else (
+    set "returncode=1" & goto :end
 )
 
-if "%checkonly%" neq "1" (
-    powershell -NoProfile -ExecutionPolicy Bypass -Command ^
-        "try{((Get-WmiObject Win32_Process | Where-Object { %filter% } | ForEach-Object { echo $_.Name $_.ProcessId `n - | Add-Content -Path "%logpath%" -Encoding UTF8; taskkill /PID $_.ProcessId /F 2>&1 })[0])}catch{exit 1}" >nul || set "returncode=1"
-    if "!returncode!" neq "1" timeout /t 3 >Nul
-    powershell -NoProfile -ExecutionPolicy Bypass -Command ^
-        "try{((Get-WmiObject Win32_Process | Where-Object { %filter% } | Select-Object -Property ProcessId, Name, ExecutablePath))}catch{exit 1}" > "%doublecheckfile%"
-    for %%i in ("%doublecheckfile%") do if %%~zi NEQ 0 set "returncode=4"
+if "%checkonly%"=="1" goto :end
+
+set /a "attempt=1"
+if "%verysilent%" neq "1" echo Killing processes...
+if "%logs%"=="1" (echo - >> "%logpath%" & echo Killing processes... >> "%logpath%")
+:kill
+if "%attempt%" NEQ "1" if "%silent%" NEQ "1" echo attempt = "%attempt%"
+if "%logs%"=="1" echo Attempt = "%attempt%"  >> "%logpath%"
+powershell -NoProfile -ExecutionPolicy Bypass -Command ^
+    "Get-WmiObject Win32_Process | Where-Object { %filter% } | ForEach-Object { taskkill /PID $_.ProcessId /F 2>&1 }" >nul
+timeout /t 2 >nul
+powershell -NoProfile -ExecutionPolicy Bypass -Command ^
+    "try{((Get-WmiObject Win32_Process | Where-Object { %filter% } | Select-Object -Property ProcessId, Name, ExecutablePath))}catch{exit 1}" > "%doublecheckfile%"
+for %%i in ("%doublecheckfile%") do if %%~zi NEQ 0 (set "returncode=4") else (set "returncode=0")
+if "!returncode!"=="4" if "%retry%"=="1" if "%attempt%" NEQ "3" (
+    set /a attempt+=1
+    goto :kill
 )
+if "%logs%"=="1" echo - >> "%logpath%"
 
 
 
@@ -175,41 +193,43 @@ REM   ====================== ENDING ===============================
 :end
 if not defined returncode set "returncode=1"
 
-
 if "%verysilent%" neq "1" (
-    if "%returncode%"=="0"                       echo All processes have been killed.
-    if "%returncode%"=="1"                       echo Not any matching process found.
-    if "%returncode%"=="2"                       echo [Error] - Variable %%folders%% is null.
-    if "%returncode%"=="3"                       echo [Error] - No valid folder filter created.
-    if "%returncode%"=="4"                       echo [Error] - Failed to close those processes : & type "%doublecheckfile%"
-    if "%returncode%"=="5"                       echo [Error] - Unrecognized argument
+    if "%returncode%"=="0" if "%checkonly%"=="0" echo  RESULT Code %returncode% : All processes have been killed.
+    if "%returncode%"=="0" if "%checkonly%"=="1" echo  RESULT Code %returncode% : Matching processes found.
+    if "%returncode%"=="1"                       echo  RESULT Code %returncode% : Not any matching process found.
+    if "%returncode%"=="2"                       echo  RESULT Code %returncode% : [Error] - Variable %%folders%% is null.
+    if "%returncode%"=="3"                       echo  RESULT Code %returncode% : [Error] - No valid folder filter created.
+    if "%returncode%"=="4" if "%silent%"=="0"    echo  RESULT Code %returncode% : [Error] - Failed to close those processes : & type "%doublecheckfile%"
+    if "%returncode%"=="4" if "%silent%"=="1"    echo  RESULT Code %returncode% : [Error] - Failed to close some processes.
+    if "%returncode%"=="5"                       echo  RESULT Code %returncode% : [Error] - Unrecognized argument
+    if "%disablereturncodes%"=="1"               echo 'disablereturncodes' is enabled so this script will return 0 anyway
     echo.
 )
 
 if "%logs%"=="1" ((
     echo VARIABLES AT END :
     echo folders = %folders%
-    echo recursive = %recursive% / checkonly = %checkonly% / test = %test% / disablereturncodes = %disablereturncodes% / silent = %silent% / verysilent = %verysilent% / logs = %logs%
+    echo logpath = %logpath%
+    echo [recursive = %recursive%] [retry = %retry%] [checkonly = %checkonly%] [endpause = %endpause%] [disablereturncodes = %disablereturncodes%] [silent = %silent%] [verysilent = %verysilent%]
     echo -    
     echo filter = %filter%
     echo -
     echo FINAL RETURN CODE :
-    if "%returncode%"=="0"                       echo %returncode% - All processes have been killed.
+    if "%returncode%"=="0" if "%checkonly%"=="0" echo %returncode% - All processes have been killed.
+    if "%returncode%"=="0" if "%checkonly%"=="1" echo %returncode% - Matching processes found.
     if "%returncode%"=="1"                       echo %returncode% - Not any matching process found.
     if "%returncode%"=="2"                       echo %returncode% - [Error] - Variable %%folders%% is null.
     if "%returncode%"=="3"                       echo %returncode% - [Error] - No valid folder filter created.
     if "%returncode%"=="4"                       echo %returncode% - [Error] - Failed to close those processes : & type "%doublecheckfile%"
     if "%returncode%"=="5"                       echo %returncode% - [Error] - Unrecognized argument
+    if "%disablereturncodes%"=="1"               echo 'disablereturncodes' is enabled so this script will return 0 anyway
     echo -
 )) >> "%logpath%"
 del /f "%doublecheckfile%" >nul 2>&1
 
-if "%checkonly%"=="1" if "%verysilent%" neq "1" echo Return Code = %returncode%
-if "%test%"=="1"      if "%verysilent%" neq "1" echo Return Code = %returncode%
 if "%verysilent%" neq "1" (echo  --------------------------  END  ------------------------- & echo.)
 echo --------------  [END] - %date% -%time:~0,8%  ------------- >> "%logpath%" & echo. >> "%logpath%"
 
-if "%checkonly%"=="1" pause
-if "%test%"=="1" pause
+if "%endpause%"=="1" pause
 if "%disablereturncodes%"=="1" set "returncode=0"
 exit /b %returncode%
