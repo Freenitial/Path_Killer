@@ -34,7 +34,7 @@ REM How to call with args : pathkiller.bat /folder "C:\first\path" /folder "C:\s
 REM If you call this script without any arg : full default config above applied
 
 REM Return codes 
-::     0 = Some processes have been found and killed
+::     0 = All processes have been found and killed
 ::     1 = Not any process to kill was found
 ::     2 = %folders% value is null (check if your args are correctly given, otherwise if default is correctly set)
 ::     3 = No valid filter created (check if your args are correctly given)
@@ -130,7 +130,7 @@ if not defined returncode set "returncode=1"
 
 
 if "%verysilent%"=="0" (
-    if "%returncode%"=="0"                       echo Some processes have been killed.
+    if "%returncode%"=="0"                       echo All processes have been killed.
     if "%returncode%"=="1"                       echo Not any matching process found.
     if "%returncode%"=="2"                       echo [Error] - Variable %%folders%% is null.
     if "%returncode%"=="3"                       echo [Error] - No valid folder filter created.
@@ -146,7 +146,7 @@ if "%logs%"=="1" ((
     echo filter = %filter%
     echo -
     echo FINAL RETURN CODE :
-    if "%returncode%"=="0"                       echo %returncode% - Some processes have been killed.
+    if "%returncode%"=="0"                       echo %returncode% - All processes have been killed.
     if "%returncode%"=="1"                       echo %returncode% - Not any matching process found.
     if "%returncode%"=="2"                       echo %returncode% - [Error] - Variable %%folders%% is null.
     if "%returncode%"=="3"                       echo %returncode% - [Error] - No valid folder filter created.
