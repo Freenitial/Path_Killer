@@ -6,14 +6,14 @@
 REM ================= DEFAULT CONFIGURATION ====================
 
 set "folders="C:\first\path";"C:\second path""     :: List of paths formated like this
+set "logfile=%temp%\pathkiller.log"                :: logs location
+set "logs=1"                                       :: Enable writting logs
 set "recursive=1"                                  :: Enable recursive search into subfolders
 set "checkonly=0"                                  :: Not kill + show return code + pause
 set "test=0"                                       :: Kill + show return code + pause
 set "disablereturncodes=0"                         :: Activate if you want to return 0 everytime
 set "silent=0"                                     :: Hide text output from taskkill commands
 set "verysilent=0"                                 :: Hide everything
-set "logs=1"                                       :: Enable writting logs
-set "logfile=%temp%\pathkiller.log"                :: logs location
 
 REM  %temp% from user/admin = %localappdata%\Temp  :: %temp% from system account = %windir%\Temp
 
