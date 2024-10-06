@@ -1,6 +1,13 @@
- ====================   PATH KILLER   =====================
+ ## **PATH KILLER**
+
+
+
+Description
 |                           ---                            |
-|   Kill any process located into specified folder paths   |
+|                                                       |
+|   **Kill any process located into specified folder paths**   |
+|                                                       |
+|   Optionnal : call with arguments to replace the default config   |
 
 --------------------
 
@@ -12,9 +19,7 @@ Be careful if you provide any /folder arguments, the first one will reset this v
 
 --------------------
 
-### Optionnal : call with args to replace the default config below
-
-**Here is supported args**:
+**Supported arguments**:
 ```
 /folder  "C:\give\a\path"        : A folder to kill processes from. You can use this argument many times
 /logpath "%temp%\pathkiller.log" : Log file location
