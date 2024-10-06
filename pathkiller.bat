@@ -3,7 +3,15 @@
 
 
 
-REM ================= DEFAULT CONFIGURATION ====================
+REM    ====================   PATH KILLER   =====================
+REM   |                           ---                            |
+REM   |   Kill any process located into specified folder paths   |
+REM    ==========================================================
+
+
+
+
+REM   ================= DEFAULT CONFIGURATION ====================
 
 set "folders="C:\first\path";"C:\second path""     :: List of paths formated like this
 set "logpath=%temp%\pathkiller.log"                :: Logs location
@@ -15,19 +23,10 @@ set "disablereturncodes=0"                         :: Activate if you want to fi
 set "silent=0"                                     :: Hide text output from taskkill commands
 set "verysilent=0"                                 :: Hide everything
 
-REM  %temp% from user/admin = %localappdata%\Temp  :: %temp% from system account = %windir%\Temp
 
 
 
-if "%verysilent%"=="0" echo  ====================   PATH KILLER   =====================
-REM                         |                           ---                            |
-REM                         |   Kill any process located into specified folder paths   |
-REM                          ==========================================================
-echo.
-
-
-
-REM ======================= TUTORIAL ==========================
+REM   ======================= TUTORIAL ==========================
 
 REM (optionnal) CALL WITH ARGS TO REPLACE CORRESPONDING DEFAULT CONFIG ABOVE (/folder can be used many times)
 REM How to call with args : pathkiller.bat /folder "C:\first\path" /folder "C:\second path" /test 1
@@ -38,18 +37,22 @@ REM Return codes
 ::     1 = Not any process to kill was found
 ::     2 = %folders% value is null (check if your args are correctly given, otherwise if default is correctly set)
 ::     3 = No valid filter created (check if your args are correctly given)
-::     4 = Failed to close those processes
+::     4 = Failed to close some processes
 ::     5 = Unrecognized argument
 
-REM *******  You can stop read from there.  *******
+REM  %temp% from user/admin = %localappdata%\Temp  :: %temp% from system account = %windir%\Temp
 
 
 
 
-REM =============== OPTIONAL ARGUMENTS HANDLING ===============
+REM   -----------------------------------------------------------
+REM                 You can stop read from there.  
+REM   -----------------------------------------------------------
 
 
 
+
+REM   =============== OPTIONAL ARGUMENTS HANDLING ===============
 
 :parse_args
 if "%~1"=="" goto :after_args
@@ -65,12 +68,15 @@ if /i "%~1"=="/silent"              (set "silent=%~2"             & shift & shif
 if /i "%~1"=="/verysilent"          (set "verysilent=%~2"         & shift & shift & goto :parse_args)
 if /i "%~1"=="/logs"                (set "logs=%~2"               & shift & shift & goto :parse_args)
 if /i "%~1"=="/logpath"             (set "logpath=%~2"            & shift & shift & goto :parse_args)
-
 REM We hit this point if an unrecognized argument is given
 if "verysilent" neq "1" echo Unrecognized argument : %~1
 set "returncode=5"
-
 :after_args
+
+
+
+
+REM   ===================== EXECUTION =============================
 
 if not defined logpath set "logpathwasnull=1"
 if "%logs%"=="1" (
@@ -109,11 +115,7 @@ if "%logs%"=="1" (
     rmdir "!testDir!" >nul 2>&1
 )
 
-
-
-
-REM ===================== EXECUTION =============================
-
+if "%verysilent%"=="0" (echo  ====================   PATH KILLER   ===================== & echo.)
 set "doublecheckfile=%temp%\pathkiller_doublecheck.txt"
 
 if "%logs%"=="1" if not defined alreadyheader ((
@@ -168,7 +170,7 @@ if "%checkonly%" neq "1" (
 
 
 
-REM ====================== ENDING ===============================
+REM   ====================== ENDING ===============================
 
 :end
 if not defined returncode set "returncode=1"
