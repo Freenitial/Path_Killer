@@ -118,7 +118,7 @@ if "%logs%"=="1" (
     rmdir "!testDir!" >nul 2>&1
 )
 
-if "%verysilent%"=="0" (echo  ====================   PATH KILLER   ===================== & echo.)
+if "%verysilent%"=="0" (echo  =================   PATH KILLER START   ================== & echo.)
 set "doublecheckfile=%temp%\pathkiller_doublecheck.txt"
 del /f "%doublecheckfile%" >nul 2>&1
 
@@ -237,7 +237,7 @@ if "%logs%"=="1" ((
 )) >> "%logpath%"
 del /f "%doublecheckfile%" >nul 2>&1
 
-if "%verysilent%" neq "1" (echo  --------------------------  END  ------------------------- & echo.)
+if "%verysilent%" neq "1" (echo  --------------------  PATH KILLER END  ------------------- & echo.)
 echo -------------------------  [END] ------------------------- >> "%logpath%" & echo - >> "%logpath%" & echo - >> "%logpath%" & echo - >> "%logpath%" & echo - >> "%logpath%"
 
 if "%endpause%"=="1" pause
