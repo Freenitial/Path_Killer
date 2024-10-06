@@ -71,7 +71,7 @@ if /i "%~1"=="/verysilent"          (set "verysilent=%~2"         & shift & shif
 if /i "%~1"=="/logs"                (set "logs=%~2"               & shift & shift & goto :parse_args)
 if /i "%~1"=="/logpath"             (set "logpath=%~2"            & shift & shift & goto :parse_args)
 if /i "%~1"=="/retry"               (set "retry=%~2"              & shift & shift & goto :parse_args)
-REM We hit this point if an unrecognized argument is given
+REM We hit this point if an argument is not recognized
 if "%verysilent%" neq "1" echo Unrecognized argument : %~1
 set "returncode=5"
 :after_args
