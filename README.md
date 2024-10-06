@@ -17,12 +17,13 @@ Be careful if you provide any /folder arguments, the first one will reset this v
 **Here is supported args**:
 ```
 /folder  "C:\give\a\path"        : A folder to kill processes from. You can use this argument many times
-/logfile "%temp%\pathkiller.log" : Logs location
+/logpath "%temp%\pathkiller.log" : Log file location
 
 /logs               1 (or 0)     : Enable logs
 /recursive          1 (or 0)     : Enable recursive search into subfolders
+/retry              1 (or 1)     : Kill again if processes still runing (max 3 attemps, 2s loop)
 /checkonly          0 (or 1)     : Not kill + show return code + pause
-/test               0 (or 1)     : Kill + show return code + pause
+/endpause           0 (or 1)     : Pause at the end
 /disablereturncodes 0 (or 1)     : Activate if you want to return 0 everytime
 /silent             0 (or 1)     : Hide text output from taskkill commands
 /verysilent         0 (or 1)     : Hide everything
@@ -32,31 +33,32 @@ Be careful if you provide any /folder arguments, the first one will reset this v
 
 **How to call with args** : 
 ```
-pathkiller.bat /folder "C:\first\path" /folder "C:\second path" /test 1
+pathkiller.bat /folder "C:\first\path" /folder "C:\second path" /endpause 1
 ```
 
-**How to call properly from another batch** : 
+**How to call properly with all arguments from another batch** : 
 ```
 call pathkiller.bat /folder "C:\Program Files\Mozilla" ^
                     /folder "%programfiles%\Google\Chrome" ^
-                    /recursive 1 ^
-                    /checkonly 0 ^
-                    /test 1 ^
-                    /disablereturncodes 1 ^
-                    /silent 0 ^
+                    /logpath "%temp%\pathkiller.log"
                     /logs 1 ^
-                    /logfile "C:\Windows\Temp"
+                    /recursive 1 ^
+                    /retry 1 ^
+                    /checkonly 0 ^
+                    /endpause 0 ^
+                    /disablereturncodes 0 ^
+                    /silent 0 ^
 ```
 
 --------------------
 
 Return codes
 ```
-0 = Some processes have been found and killed
+0 = Some processes have been found (if checkonly=1) or killed (if checkonly=0)
 1 = Not any process to kill was found
 2 = %folders% value is null (check if your args are correctly given, otherwise if default is correctly set)
 3 = No valid filter created (check if your args are correctly given)
-4 = Failed to close those processes
+4 = Failed to close some processes
 5 = Unrecognized argument
 ```
 
