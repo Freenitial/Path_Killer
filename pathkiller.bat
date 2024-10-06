@@ -13,13 +13,13 @@ REM    ==========================================================
 
 REM   ================= DEFAULT CONFIGURATION ====================
 
-set "folders="C:\first\path";"C:\second path""     :: List of paths formated like this
+set "folders="C:\first\path";"C:\second path""     :: List of paths preformated -to modify if you dont use /folder arg-
 set "logpath=%temp%\pathkiller.log"                :: Logs location
 set "logs=1"                                       :: Write logs
 set "recursive=1"                                  :: Search into subfolders
 set "retry=1"                                      :: Kill again if processes still runing (max 3 attemps, 2s loop)
 set "checkonly=0"                                  :: Only search processes without killing
-set "endpause=1"                                   :: Pause at the end
+set "endpause=0"                                   :: Pause at the end
 set "disablereturncodes=0"                         :: Final return '0' everytime
 set "silent=0"                                     :: Hide text output from taskkill commands
 set "verysilent=0"                                 :: Hide everything
