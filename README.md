@@ -52,7 +52,7 @@ call pathkiller.bat /folder "C:\Program Files\Mozilla" ^
 
 --------------------
 
-Return codes
+**Return codes**
 ```
 0 = Some processes have been found (if checkonly=1) or killed (if checkonly=0)
 1 = Not any process to kill was found
