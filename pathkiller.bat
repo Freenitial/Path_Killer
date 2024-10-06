@@ -13,7 +13,7 @@ REM    ==========================================================
 
 REM   ================= DEFAULT CONFIGURATION ====================
 
-set "folders="C:\first\path";"C:\second path""     :: List of paths preformated -to modify if you dont use /folder arg-
+set "folders="C:\first\path";"C:\second path""     :: Pseudo-list of paths preformated -to modify if you dont use /folder arg-
 set "logpath=%temp%\pathkiller.log"                :: Logs location
 set "logs=1"                                       :: Write logs
 set "recursive=1"                                  :: Search into subfolders
