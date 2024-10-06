@@ -4,19 +4,26 @@
 
 --------------------
 
+**How to preformat folders list inside the script if you don't want give /folder arguments :**
+```
+set "folders="C:\first\path";"C:\second path";"C:\third\path""
+```
+
+--------------------
+
 ### Optionnal : call with args to replace the default config below
 
 **Here is supported args**:
 ```
-/folder     "C:\give\a\path" : A folder to kill processes from. You can use this argument may times
-/logfile    "C:\give\a\path" : Logs location
-/logs               1 (or 0) : Enable logs
-/recursive          1 (or 0) : Enable recursive search into subfolders
-/checkonly          0 (or 1) : Not kill + show return code + pause
-/test               0 (or 1) : Kill + show return code + pause
-/disablereturncodes 0 (or 1) : Activate if you want to return 0 everytime
-/silent             0 (or 1) : Hide text output from taskkill commands
-/verysilent         0 (or 1) : Hide everything
+/folder  "C:\give\a\path"        : A folder to kill processes from. You can use this argument may times
+/logfile "%temp%\pathkiller.log" : Logs location
+/logs               1 (or 0)     : Enable logs
+/recursive          1 (or 0)     : Enable recursive search into subfolders
+/checkonly          0 (or 1)     : Not kill + show return code + pause
+/test               0 (or 1)     : Kill + show return code + pause
+/disablereturncodes 0 (or 1)     : Activate if you want to return 0 everytime
+/silent             0 (or 1)     : Hide text output from taskkill commands
+/verysilent         0 (or 1)     : Hide everything
                     |     |
          Default <--'     '--> You can replace in the file / or give argument to replace
 ```
@@ -41,13 +48,6 @@ call pathkiller.bat /folder "C:\Program Files\Mozilla" ^
 
 --------------------
 
-How to preformat folders list inside the script if you don't want give /folder arguments :
-```
-set "folders="C:\first\path";"C:\second path";"C:\third\path""
-```
-
---------------------
-
 Return codes
 ```
 0 = Some processes have been found and killed
@@ -57,3 +57,9 @@ Return codes
 4 = Failed to close those processes
 5 = Unrecognized argument
 ```
+
+--------------------
+
+**Remember :**
+- %temp% from user/admin     = %localappdata%\Temp
+- %temp% from system account = %windir%\Temp
