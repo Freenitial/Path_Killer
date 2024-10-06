@@ -130,12 +130,12 @@ if "%logs%"=="1" if not defined alreadyheader ((
 )) >> "%logpath%"
 if "%logs%"=="1" ((
     echo -
-    echo UserName                =  %UserName%
-    echo UserProfile             =  %UserProfile%
-    echo Temp                    =  %Temp%
-    echo Current Directory (CD)  =  %CD%
-    echo ComputerName            =  %ComputerName%
-    echo UserDomain              =  %UserDomain%
+    echo UserName                =  "%UserName%"
+    echo UserProfile             =  "%UserProfile%"
+    echo Temp                    =  "%Temp%"
+    echo Current Directory (CD)  =  "%CD%"
+    echo ComputerName            =  "%ComputerName%"
+    echo UserDomain              =  "%UserDomain%"
     echo -
     echo VARIABLES AT BEGIN :
     echo folders = %folders%
