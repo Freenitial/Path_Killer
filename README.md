@@ -21,7 +21,7 @@ Be careful if you provide any /folder arguments, the first one will reset this v
 
 **Supported arguments**:
 ```
-/folder  "C:\give\a\path"        : Folder to kill processes from. You can use this argument many times
+/folder  "C:\give\a\path"        : Folder to kill processes from. Argument usable multiple times
 /logpath "%temp%\pathkiller.log" : Log file location
 
 /logs               1 (or 0)     : Enable logs
@@ -33,7 +33,7 @@ Be careful if you provide any /folder arguments, the first one will reset this v
 /silent             0 (or 1)     : Hide text output from taskkill commands
 /verysilent         0 (or 1)     : Hide everything
                     |     |
-         Default <--'     '--> You can replace in the file / or give corresponding argument to replace
+         Default <--'     '--> You can replace in the file OR give corresponding argument to replace
 ```
 
 **How to call with args** : 
