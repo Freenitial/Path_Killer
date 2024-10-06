@@ -8,6 +8,7 @@
 ```
 set "folders="C:\first\path";"C:\second path";"C:\third\path""
 ```
+Be careful if you provide any /folder arguments, the first one will reset this variable %folders%
 
 --------------------
 
