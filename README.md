@@ -47,7 +47,7 @@ call pathkiller.bat /folder "C:\Program Files\Mozilla" ^
                     /checkonly 0 ^
                     /endpause 0 ^
                     /disablereturncodes 0 ^
-                    /silent 0 ^
+                    /silent 0 
 ```
 
 --------------------
