@@ -19,9 +19,9 @@ set "logs=1"                                       :: Write logs
 set "recursive=1"                                  :: Search into subfolders
 set "retry=1"                                      :: Kill again if processes still runing (max 3 attemps, 2s loop)
 set "checkonly=0"                                  :: Only search processes without killing
-set "endpause=0"                                   :: Pause at the end
+set "endpause=1"                                   :: Pause at the end
 set "disablereturncodes=0"                         :: Final return '0' everytime
-set "silent=1"                                     :: Hide text output from taskkill commands
+set "silent=0"                                     :: Hide text output from taskkill commands
 set "verysilent=0"                                 :: Hide everything
 
 
@@ -101,10 +101,10 @@ if "%logs%"=="1" (
             )
             echo.
         )
-        echo -  >> "!logpath!" 
-        echo -  >> "!logpath!" 
-        echo -  >> "!logpath!" 
-        echo ================  [BEGIN] - %date% - %time:~0,8%  ===============  >> "!logpath!" 
+        echo _________________________________________________________________________________________________ >> "!logpath!" 
+        echo. >> "!logpath!" 
+        echo ===============================  [BEGIN] - %date% - %time:~0,8%  =============================== >> "!logpath!" 
+        echo _________________________________________________________________________________________________ >> "!logpath!" 
         set "alreadyheader=1"
         echo [WARNING] - Overriding %%logpath%% by %%temp%%\pathkiller.log, >> "!logpath!" 
         if not defined logpathwasnull (
@@ -123,19 +123,19 @@ set "doublecheckfile=%temp%\pathkiller_doublecheck.txt"
 del /f "%doublecheckfile%" >nul 2>&1
 
 if "%logs%"=="1" if not defined alreadyheader ((
-    echo -
-    echo -
-    echo -
-    echo ================  [BEGIN] - %date% - %time:~0,8%  ===============
+    echo _________________________________________________________________________________________________
+    echo.
+    echo ===============================  [BEGIN] - %date% - %time:~0,8%  ===============================
+    echo _________________________________________________________________________________________________
 )) >> "%logpath%"
 if "%logs%"=="1" ((
     echo -
-    echo UserName                =  "%UserName%"
-    echo UserProfile             =  "%UserProfile%"
-    echo Temp                    =  "%Temp%"
-    echo Current Directory (CD)  =  "%CD%"
-    echo ComputerName            =  "%ComputerName%"
-    echo UserDomain              =  "%UserDomain%"
+    echo UserName                =  %UserName%
+    echo UserProfile             =  %UserProfile%
+    echo Temp                    =  %Temp%
+    echo Current Directory - CD  =  %CD%
+    echo ComputerName            =  %ComputerName%
+    echo UserDomain              =  %UserDomain%
     echo -
     echo VARIABLES AT BEGIN :
     echo folders = %folders%
@@ -164,6 +164,8 @@ if "%logs%"=="1" echo Searching processes...   >> "%logpath%"
 powershell -NoProfile -ExecutionPolicy Bypass -Command ^
     "Get-WmiObject Win32_Process | Where-Object { %filter% } | Select-Object -Property ProcessId, Name, ExecutablePath" > "%doublecheckfile%"
 for %%i in ("%doublecheckfile%") do if %%~zi NEQ 0 (
+    powershell -NoProfile -ExecutionPolicy Bypass -Command ^
+        "(Get-Content '%doublecheckfile%' | Select-Object -SkipLast 1) | Set-Content '%doublecheckfile%'"
     set "returncode=0"
     if "%silent%" neq "1" type "%doublecheckfile%"
     if "%logs%"=="1" type "%doublecheckfile%" >> "%logpath%"
@@ -189,6 +191,8 @@ if "!returncode!"=="4" if "%retry%"=="1" if "%attempt%" NEQ "3" (
     set /a attempt+=1
     goto :kill
 )
+for %%i in ("%doublecheckfile%") do if %%~zi NEQ 0 if "!returncode!"=="4" powershell -NoProfile -ExecutionPolicy Bypass -Command ^
+        "(Get-Content '%doublecheckfile%' | Select-Object -SkipLast 1) | Set-Content '%doublecheckfile%'"
 if "%logs%"=="1" echo - >> "%logpath%"
 
 
@@ -217,7 +221,6 @@ if "%logs%"=="1" ((
     echo folders = %folders%
     echo logpath = %logpath%
     echo [recursive = %recursive%] [retry = %retry%] [checkonly = %checkonly%] [endpause = %endpause%] [disablereturncodes = %disablereturncodes%] [silent = %silent%] [verysilent = %verysilent%]
-    echo -    
     echo filter = %filter%
     echo -
     echo FINAL RETURN CODE :
@@ -234,7 +237,7 @@ if "%logs%"=="1" ((
 del /f "%doublecheckfile%" >nul 2>&1
 
 if "%verysilent%" neq "1" (echo  --------------------------  END  ------------------------- & echo.)
-echo --------------  [END] - %date% -%time:~0,8%  ------------- >> "%logpath%" & echo. >> "%logpath%"
+echo -------------------------  [END] ------------------------- >> "%logpath%" & echo - >> "%logpath%" & echo - >> "%logpath%" & echo - >> "%logpath%" & echo - >> "%logpath%"
 
 if "%endpause%"=="1" pause
 if "%disablereturncodes%"=="1" set "returncode=0"
