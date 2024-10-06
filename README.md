@@ -15,7 +15,7 @@ set "folders="C:\first\path";"C:\second path";"C:\third\path""
 
 **Here is supported args**:
 ```
-/folder  "C:\give\a\path"        : A folder to kill processes from. You can use this argument may times
+/folder  "C:\give\a\path"        : A folder to kill processes from. You can use this argument many times
 /logfile "%temp%\pathkiller.log" : Logs location
 /logs               1 (or 0)     : Enable logs
 /recursive          1 (or 0)     : Enable recursive search into subfolders
