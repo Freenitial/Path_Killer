@@ -72,7 +72,7 @@ if /i "%~1"=="/logs"                (set "logs=%~2"               & shift & shif
 if /i "%~1"=="/logpath"             (set "logpath=%~2"            & shift & shift & goto :parse_args)
 if /i "%~1"=="/retry"               (set "retry=%~2"              & shift & shift & goto :parse_args)
 REM We hit this point if an argument is not recognized
-if "%verysilent%" neq "1" echo Unrecognized argument : %~1
+if "%verysilent%" neq "1" echo [Error] Code %returncode% - Argument not recognized : %~1
 set "returncode=5"
 :after_args
 if "%verysilent%"=="1" set "silent=1"
@@ -113,7 +113,7 @@ if "%logs%"=="1" (
         ) else (
             echo             because value of %%logpath%% seems to be empty or wrong : "%logpath%"  >> "!logpath!"
         )
-        if "%returncode%"=="5" (echo Unrecognized argument : %~1 >> "!logpath!" & goto :end)
+        if "%returncode%"=="5" (echo [Error] Code %returncode% - Argument not recognized : %~1 >> "!logpath!" & goto :end)
     )
     rmdir "!testDir!" >nul 2>&1
 )
@@ -212,7 +212,6 @@ if "%verysilent%" neq "1" (
     if "%returncode%"=="3"                       echo  RESULT Code %returncode% : [Error] - No valid folder filter created.
     if "%returncode%"=="4" if "%silent%"=="0"    echo  RESULT Code %returncode% : [Error] - Failed to close those processes : & type "%doublecheckfile%"
     if "%returncode%"=="4" if "%silent%"=="1"    echo  RESULT Code %returncode% : [Error] - Failed to close some processes.
-    if "%returncode%"=="5"                       echo  RESULT Code %returncode% : [Error] - Unrecognized argument
     if "%disablereturncodes%"=="1"               echo 'disablereturncodes' is enabled so this script will return 0 anyway
     echo.
 )
@@ -231,7 +230,6 @@ if "%logs%"=="1" ((
     if "%returncode%"=="2"                       echo %returncode% - [Error] - Variable %%folders%% is null.
     if "%returncode%"=="3"                       echo %returncode% - [Error] - No valid folder filter created.
     if "%returncode%"=="4"                       echo %returncode% - [Error] - Failed to close those processes : & type "%doublecheckfile%"
-    if "%returncode%"=="5"                       echo %returncode% - [Error] - Unrecognized argument
     if "%disablereturncodes%"=="1"               echo 'disablereturncodes' is enabled so this script will return 0 anyway
     echo -
 )) >> "%logpath%"
