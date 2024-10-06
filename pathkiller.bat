@@ -61,6 +61,7 @@ if /i "%~1"=="/disablereturncodes"  (set "disablereturncodes=%~2" & shift & shif
 if /i "%~1"=="/silent"              (set "silent=%~2"             & shift & shift & goto :parse_args)
 if /i "%~1"=="/verysilent"          (set "verysilent=%~2"         & shift & shift & goto :parse_args)
 if /i "%~1"=="/logs"                (set "logs=%~2"               & shift & shift & goto :parse_args)
+if /i "%~1"=="/logfile"             (set "logfile=%~2"            & shift & shift & goto :parse_args)
 REM We hit this point if an unrecognized argument is given
 if "verysilent" neq "1" echo Unrecognized argument : %~1
 echo Unrecognized argument : %~1 >> "%logfile%"
