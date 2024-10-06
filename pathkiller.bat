@@ -113,7 +113,6 @@ if "%logs%"=="1" (
         ) else (
             echo             because value of %%logpath%% seems to be empty or wrong : "%logpath%"  >> "!logpath!"
         )
-        echo -  >> "!logpath!"
         if "%returncode%"=="5" (echo Unrecognized argument : %~1 >> "!logpath!" & goto :end)
     )
     rmdir "!testDir!" >nul 2>&1
@@ -130,6 +129,13 @@ if "%logs%"=="1" if not defined alreadyheader ((
     echo ================  [BEGIN] - %date% - %time:~0,8%  ===============
 )) >> "%logpath%"
 if "%logs%"=="1" ((
+    echo -
+    echo UserName                =  %UserName%
+    echo UserProfile             =  %UserProfile%
+    echo Temp                    =  %Temp%
+    echo Current Directory (CD)  =  %CD%
+    echo ComputerName            =  %ComputerName%
+    echo UserDomain              =  %UserDomain%
     echo -
     echo VARIABLES AT BEGIN :
     echo folders = %folders%
