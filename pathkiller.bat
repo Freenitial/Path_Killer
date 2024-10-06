@@ -204,6 +204,7 @@ REM   ====================== ENDING ===============================
 if not defined returncode set "returncode=1"
 
 if "%verysilent%" neq "1" (
+    echo.
     if "%returncode%"=="0" if "%checkonly%"=="0" echo  RESULT Code %returncode% : All processes have been killed.
     if "%returncode%"=="0" if "%checkonly%"=="1" echo  RESULT Code %returncode% : Matching processes found.
     if "%returncode%"=="1"                       echo  RESULT Code %returncode% : Not any matching process found.
