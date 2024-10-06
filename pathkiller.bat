@@ -5,7 +5,7 @@
 
 REM ================= DEFAULT CONFIGURATION ====================
 
-set "folders="C:\first\path";"C:\second path""     :: List of paths preformated like this
+set "folders="C:\first\path";"C:\second path""     :: List of paths formated like this
 set "recursive=1"                                  :: Enable recursive search into subfolders
 set "checkonly=0"                                  :: Not kill + show return code + pause
 set "test=0"                                       :: Kill + show return code + pause
@@ -15,7 +15,7 @@ set "verysilent=0"                                 :: Hide everything
 set "logs=1"                                       :: Enable writting logs
 set "logfile=%temp%\pathkiller.log"                :: logs location
 
-REM %temp% openas user/admin = %localappdata%\Temp :: %temp% opened as system account = C:\Windows\Temp
+REM  %temp% from user/admin = %localappdata%\Temp  :: %temp% from system account = %windir%\Temp
 
 
 
@@ -61,7 +61,6 @@ if /i "%~1"=="/disablereturncodes"  (set "disablereturncodes=%~2" & shift & shif
 if /i "%~1"=="/silent"              (set "silent=%~2"             & shift & shift & goto :parse_args)
 if /i "%~1"=="/verysilent"          (set "verysilent=%~2"         & shift & shift & goto :parse_args)
 if /i "%~1"=="/logs"                (set "logs=%~2"               & shift & shift & goto :parse_args)
-if /i "%~1"=="/logfile"             (set "logfile=%~2"            & shift & shift & goto :parse_args)
 REM We hit this point if an unrecognized argument is given
 if "verysilent" neq "1" echo Unrecognized argument : %~1
 echo Unrecognized argument : %~1 >> "%logfile%"
@@ -102,15 +101,14 @@ REM Remove the trailing " -or " from the filter string
 set "filter=%filter:~0,-4%"
 if not defined filter (set "returncode=3" & goto :end)
 
-if "%silent%" neq "0" set "nulornot=1"
-if "%verysilent%" neq "0" set "nulornot=1"
-if defined nulornot (set "switch=>nul") else (set "switch=")
-
 if "%verysilent%" neq "1" echo Looking for processes to kill...
 powershell -NoProfile -ExecutionPolicy Bypass -Command ^
-    "try{((Get-WmiObject Win32_Process | Where-Object { %filter% } | Select-Object -Property ProcessId, Name, ExecutablePath)[0])}catch{exit 1}" %switch% && set "checkok=1"
+    "try{((Get-WmiObject Win32_Process | Where-Object { %filter% } | Select-Object -Property ProcessId, Name, ExecutablePath)[0])}catch{exit 1}" >nul && set "checkok=1"
+powershell -NoProfile -ExecutionPolicy Bypass -Command ^
+    "Get-WmiObject Win32_Process | Where-Object { %filter% } | Select-Object -Property ProcessId, Name, ExecutablePath" > "%doublecheckfile%"
+if exist "%doublecheckfile%" type "%doublecheckfile%"
 
-if defined checkok (set "returncode=0") else (set "returncode=1" & goto :end)
+if "%silent%" neq "1" if defined checkok (set "returncode=0") else (set "returncode=1" & goto :end)
 
 if "%checkonly%" neq "1" (
     powershell -NoProfile -ExecutionPolicy Bypass -Command ^
