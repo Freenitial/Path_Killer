@@ -67,6 +67,8 @@ cmd /c pathkiller.bat ^
        /disablereturncodes 0 ^
        /silent 0
 
+--------
+
 Return codes :
      0 = All processes have been found and killed
      1 = Not any process to kill was found
