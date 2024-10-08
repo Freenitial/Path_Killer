@@ -5,31 +5,43 @@
 Description
 |                           ---                            |
 |                                                       |
-|   **Kill any process located into specified folder paths**   |
+|   **Kill any processeS by path, title or name**   |
 |                                                       |
 |   Optionnal : call with arguments to replace the default config   |
 
 --------------------
 
-**How to preformat folders list inside the script if you don't want give /folder arguments :**
+Opening this script without any arg : full default configuration applied, you have to complete at least **%folders%** or **%titles%** or **%processes%** inside the script
+
+**How to preformat folders, titles and processes lists inside the script if you don't want to give arguments :**
 ```
 set "folders="C:\first\path";"C:\second path";"C:\third\path""
+set "titles="first title";"second title""
+set "processes="anyprocess.exe";"second_process.exe""
 ```
-Be careful if you provide any /folder arguments, the first one will reset this variable %folders%
 
 --------------------
 
+- If you provide any /folder  arguments, the first one will reset the variable %folders%
+- If you provide any /title   arguments, the first one will reset the variable %titles%
+- If you provide any /process arguments, the first one will reset the variable %processes%
+
 **Supported arguments**:
 ```
-/folder  "C:\give\a\path"        : Folder to kill processes from. Argument usable multiple times
-/logpath "%temp%\pathkiller.log" : Log file location
+/folder  "C:\give\a\path"        : Folder to kill processes from. You can use this argument multiple times
+/title   "this window title"     : Title of windows to kill. You can use this argument multiple times
+/process "anyprocess.exe"        : Process name you want to kill. You can use this argument multiple times
 
+/logpath "%temp%\pathkiller.log" : Log file location
+/titleim "anyprocess.exe"        : If defined %titles%, filter by process name - eg : cmd.exe
+
+/titlepartial       1 (or 0)     : Search partial title and case unsensitive - 0 mean exact title
 /logs               1 (or 0)     : Enable logs
-/recursive          1 (or 0)     : Enable recursive search into subfolders
-/retry              1 (or 0)     : Kill again if processes still runing (max 3 attemps, 2s loop)
-/checkonly          0 (or 1)     : Not kill + show return code + pause
-/endpause           0 (or 1)     : Pause at the end
-/disablereturncodes 0 (or 1)     : Activate if you want to return 0 everytime
+/recursive          1 (or 0)     : If %folders% defined, search into subfolders
+/retry              1 (or 0)     : Kill again if processes still runing (max 4 attemps, 1s loop)
+/checkonly          0 (or 1)     : Only search without killing
+/endpause           0 (or 1)     : Pause script at the end to let you read
+/disablereturncodes 0 (or 1)     : Final return code '0' everytime
 /silent             0 (or 1)     : Hide text output from taskkill commands
 /verysilent         0 (or 1)     : Hide everything
                     |     |
@@ -42,17 +54,25 @@ pathkiller.bat /folder "C:\first\path" /folder "C:\second path" /endpause 1
 ```
 
 **How to call properly with all arguments from another batch** : 
+
+In this case make sure %CD% is already in pathkiller.bat directory to let cmd interpret arguments correctly.
+Do not use full path of pathkiller.bat if it contains spaces or parenthesis.
 ```
-call pathkiller.bat /folder "C:\Program Files\Mozilla" ^
-                    /folder "%programfiles%\Google\Chrome" ^
-                    /logpath "%temp%\pathkiller.log"
-                    /logs 1 ^
-                    /recursive 1 ^
-                    /retry 1 ^
-                    /checkonly 0 ^
-                    /endpause 0 ^
-                    /disablereturncodes 0 ^
-                    /silent 0 
+cmd /c pathkiller.bat ^
+       /folder "C:\Program Files\Mozilla" ^
+       /folder "%programfiles%\Google\Chrome" ^
+       /recursive 1 ^
+       /process "notepad++.exe" ^
+       /process "chrome.exe" ^
+       /title "title0" ^
+       /title "title3" ^
+       /titleim "cmd.exe" ^
+       /titlepartial 1 ^
+       /retry 1 ^
+       /checkonly 0 ^
+       /endpause 1 ^
+       /disablereturncodes 0 ^
+       /silent 0
 ```
 
 --------------------
@@ -70,5 +90,7 @@ call pathkiller.bat /folder "C:\Program Files\Mozilla" ^
 --------------------
 
 **Remember :**
-- %temp% from user/admin     = %localappdata%\Temp
-- %temp% from system account = %windir%\Temp
+```
+%temp% from user/admin     =  %localappdata%\Temp
+%temp% from system account =  %windir%\Temp  OR  %windir%\System32\config\systemprofile\AppData\Local\Temp
+```
