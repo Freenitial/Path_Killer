@@ -91,6 +91,6 @@ cmd /c pathkiller.bat ^
 
 **Remember :**
 ```
-%temp% from user/admin     =  %localappdata%\Temp
-%temp% from system account =  %windir%\Temp  OR  %windir%\System32\config\systemprofile\AppData\Local\Temp
+%temp% of user/admin     = %localappdata%\Temp
+%temp% of system account = %windir%\Temp  OR  %windir%\System32\config\systemprofile\AppData\Local\Temp
 ```
