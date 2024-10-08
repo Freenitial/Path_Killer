@@ -45,7 +45,7 @@ set "processes="anyprocess.exe";"second_process.exe""
 /silent             0 (or 1)     : Hide text output from taskkill commands
 /verysilent         0 (or 1)     : Hide everything
                     |     |
-         Default <--'     '--> You can replace in the file OR give corresponding argument to replace
+         Default <--'     '--> You can replace in the file OR give corresponding argument (override)
 ```
 
 **How to call with args** : 
