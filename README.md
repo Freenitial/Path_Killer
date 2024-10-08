@@ -64,8 +64,8 @@ cmd /c pathkiller.bat ^
        /recursive 1 ^
        /process "notepad++.exe" ^
        /process "chrome.exe" ^
-       /title "title0" ^
-       /title "title3" ^
+       /title "first window title" ^
+       /title "second window title" ^
        /titleim "cmd.exe" ^
        /titlepartial 1 ^
        /retry 1 ^
