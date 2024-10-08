@@ -349,11 +349,15 @@ if "%disablereturncodes%"=="1" (
 )
 
 :: if defined results del /f "%results%" >nul 2>&1
-if "%verysilent%" neq "1" (echo. & echo  --------------------  PATHKILLER END  ------------------- & echo.)
-echo -------------------------  [END] ------------------------- >> "%logpath%" & echo - >> "%logpath%" & echo - >> "%logpath%" & echo - >> "%logpath%" & echo - >> "%logpath%"
+if "%verysilent%" neq "1" (
+    echo. & echo  --------------------  PATHKILLER END  ------------------- & echo.
+)
+if "%logs%"=="1" (
+    echo -------------------------  [END] ------------------------- >> "%logpath%"
+	echo - >> "%logpath%" & echo - >> "%logpath%" & echo - >> "%logpath%" & echo - >> "%logpath%"
+)
 
 if "%endpause%"=="1" pause
-
 exit /b %returncode%
 
 
