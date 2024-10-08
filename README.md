@@ -81,8 +81,8 @@ cmd /c pathkiller.bat ^
 ```
 0 = Some processes have been found (if checkonly=1) or killed (if checkonly=0)
 1 = Not any process to kill was found
-2 = %folders% value is null (check arguments synthax, otherwise if default is correctly set)
-3 = No valid filter created (check arguments synthax)
+2 = Variables %folders%, %titles% and %processes% are all empty
+3 = No valid filter created (related to %folders% - maybe check arguments synthax)
 4 = Failed to close some processes
 5 = Argument not recognized
 ```
