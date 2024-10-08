@@ -71,7 +71,7 @@ Return codes :
      0 = All processes have been found and killed
      1 = Not any process to kill was found
      2 = Variables %folders%, %titles% and %processes% are all empty
-     3 = No valid filter created (check if your args are correctly given)
+     3 = No valid filter created (related to %folders% - maybe check arguments synthax)
      4 = Failed to close some processes
      5 = Unrecognized argument
 
@@ -313,7 +313,7 @@ if "%verysilent%" neq "1" (
     if "%returncode%"=="0" if "%checkonly%"=="1" echo  RESULT Code %returncode% : Matching processes found.
     if "%returncode%"=="1"                       echo  RESULT Code %returncode% : Not any matching process found.
     if "%returncode%"=="2"                       echo  RESULT Code %returncode% : [Error] - Variables %%folders%%, %%titles%% and %%processes%% are all empty.
-    if "%returncode%"=="3"                       echo  RESULT Code %returncode% : [Error] - No valid folder filter created.
+    if "%returncode%"=="3"                       echo  RESULT Code %returncode% : [Error] - No valid filter created related to %%folders%% - maybe check arguments synthax.
     if "%returncode%"=="4" if "%silent%"=="0"    echo  RESULT Code %returncode% : [Error] - Failed to close those processes : & call :writeresultsconsole
     if "%returncode%"=="4" if "%silent%"=="1"    echo  RESULT Code %returncode% : [Error] - Failed to close some processes.
     if "%returncode%"=="5"                       echo  RESULT Code %returncode% : [Error] - Argument not recognized : %errorarg%
@@ -332,7 +332,7 @@ if "%logs%"=="1" if "%returncode%" neq "5" ((
     if "%returncode%"=="0" if "%checkonly%"=="1" echo %returncode% - Matching processes found.
     if "%returncode%"=="1"                       echo %returncode% - Not any matching process found.
     if "%returncode%"=="2"                       echo %returncode% - [Error] - Variables %%folders%%, %%titles%% and %%processes%% are all empty.
-    if "%returncode%"=="3"                       echo %returncode% - [Error] - No valid folder filter created.
+    if "%returncode%"=="3"                       echo %returncode% - [Error] - No valid filter created related to %%folders%% - maybe check arguments synthax.
     if "%returncode%"=="4"                       echo %returncode% - [Error] - Failed to close those processes :
     if "%returncode%" neq "4" echo -
 )) >> "%logpath%"
