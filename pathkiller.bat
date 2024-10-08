@@ -32,7 +32,7 @@ set "titlepartial=1"                               :: Search partial title and c
 set "checkonly=0"                                  :: Only search without killing
 set "endpause=0"                                   :: Pause script at the end to let you read
 set "disablereturncodes=0"                         :: Final return code '0' everytime
-set "silent=0"                                     :: Hide text output from taskkill commands
+set "silent=0"                                     :: Hide output of tasklist commands
 set "verysilent=0"                                 :: Hide everything
 
 
@@ -198,7 +198,8 @@ if "%logs%"=="1" ((
     echo -
     echo VARIABLES AT BEGIN :
     echo folders = %folders%
-    echo logpath = %logpath%
+    echo processes = %processes%
+    echo titles = %titles%  _  titleim = %titleim%  _  titlepartial = %titlepartial%
     echo [recursive = %recursive%] [retry = %retry%] [checkonly = %checkonly%] [endpause = %endpause%] [disablereturncodes = %disablereturncodes%] [silent = %silent%] [verysilent = %verysilent%]
     echo -
 )) >> "%logpath%"
@@ -325,7 +326,8 @@ if "%logs%"=="1" if "%returncode%"=="5" (echo. >> "%logpath%" & echo FINAL RETUR
 if "%logs%"=="1" if "%returncode%" neq "5" ((
     echo VARIABLES AT END :
     echo folders = %folders%
-    echo logpath = %logpath%
+    echo processes = %processes%
+    echo titles = %titles%  _  titleim = %titleim%  _  titlepartial = %titlepartial%
     echo [recursive = %recursive%] [retry = %retry%] [checkonly = %checkonly%] [endpause = %endpause%] [disablereturncodes = %disablereturncodes%] [silent = %silent%] [verysilent = %verysilent%]
     echo filter = !filter!
     echo -
