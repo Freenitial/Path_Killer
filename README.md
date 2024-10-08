@@ -28,9 +28,9 @@ set "processes="anyprocess.exe";"second_process.exe""
 
 **Supported arguments**:
 ```
-/folder  "C:\give\a\path"        : Folder to kill processes from. You can use this argument multiple times
-/title   "this window title"     : Title of windows to kill. You can use this argument multiple times
-/process "anyprocess.exe"        : Process name you want to kill. You can use this argument multiple times
+/folder  "C:\give\a\path"        : Folder to kill processes from. Usable many times
+/title   "this window title"     : Title of windows to kill. Usable many times
+/process "anyprocess.exe"        : Process name you want to kill. Usable many times
 
 /logpath "%temp%\pathkiller.log" : Log file location
 /titleim "anyprocess.exe"        : If defined %titles%, filter by process name - eg : cmd.exe
