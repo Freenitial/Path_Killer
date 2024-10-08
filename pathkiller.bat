@@ -197,10 +197,12 @@ if "%logs%"=="1" ((
     echo UserDomain              =  %UserDomain%
     echo -
     echo VARIABLES AT BEGIN :
+    echo logpath = %logpath%
     echo folders = %folders%
     echo processes = %processes%
-    echo titles = %titles%  _  titleim = %titleim%  _  titlepartial = %titlepartial%
-    echo [recursive = %recursive%] [retry = %retry%] [checkonly = %checkonly%] [endpause = %endpause%] [disablereturncodes = %disablereturncodes%] [silent = %silent%] [verysilent = %verysilent%]
+    echo titles = %titles%
+    echo titleim = %titleim%
+    echo [titlepartial=%titlepartial%] [recursive=%recursive%] [retry=%retry%] [checkonly=%checkonly%] [endpause=%endpause%] [disablereturncodes=%disablereturncodes%] [silent=%silent%] [verysilent=%verysilent%]
     echo -
 )) >> "%logpath%"
 
@@ -325,10 +327,12 @@ if "%verysilent%" neq "1" (
 if "%logs%"=="1" if "%returncode%"=="5" (echo. >> "%logpath%" & echo FINAL RETURN CODE : %returncode% - [Error] - Argument not recognized : %errorarg% >> "%logpath%" & echo. >> "%logpath%")
 if "%logs%"=="1" if "%returncode%" neq "5" ((
     echo VARIABLES AT END :
+    echo logpath = %logpath%
     echo folders = %folders%
     echo processes = %processes%
-    echo titles = %titles%  _  titleim = %titleim%  _  titlepartial = %titlepartial%
-    echo [recursive = %recursive%] [retry = %retry%] [checkonly = %checkonly%] [endpause = %endpause%] [disablereturncodes = %disablereturncodes%] [silent = %silent%] [verysilent = %verysilent%]
+    echo titles = %titles%
+    echo titleim = %titleim%
+    echo [titlepartial=%titlepartial%] [recursive=%recursive%] [retry=%retry%] [checkonly=%checkonly%] [endpause=%endpause%] [disablereturncodes=%disablereturncodes%] [silent=%silent%] [verysilent=%verysilent%]
     echo filter = !filter!
     echo -
     echo FINAL RETURN CODE :
@@ -354,7 +358,7 @@ if "%verysilent%" neq "1" (
 )
 if "%logs%"=="1" (
     echo -------------------------  [END] ------------------------- >> "%logpath%"
-	echo - >> "%logpath%" & echo - >> "%logpath%" & echo - >> "%logpath%" & echo - >> "%logpath%"
+    echo - >> "%logpath%" & echo - >> "%logpath%" & echo - >> "%logpath%" & echo - >> "%logpath%"
 )
 
 if "%endpause%"=="1" pause
