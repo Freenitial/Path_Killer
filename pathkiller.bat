@@ -27,7 +27,7 @@ set "logpath=%temp%\pathkiller\pathkiller.log"     :: Logfile location
 set "logs=1"                                       :: Enable logs
 set "recursive=1"                                  :: If folders specified, search into subfolders
 set "retry=1"                                      :: Kill again if processes still runing -max 4 attemps, 1s loop-
-set "ensure=1"                                     :: Force retry -8 attempts, 1s loop-
+set "ensure=0"                                     :: Force retry -8 attempts, 1s loop-
 set "titleim="                                     :: If titles specified, filter by process name - eg : cmd.exe
 set "titlepartial=1"                               :: Search partial title and case unsensitive - 0 mean exact title
 set "checkonly=0"                                  :: Only search without killing
@@ -127,7 +127,7 @@ if /i "%~1"=="/ensure"              (set "ensure=%~2"             & shift & shif
 if /i "%~1"=="/titleim"             (set "titleim=%~2"            & shift & shift & goto :parse_args)
 if /i "%~1"=="/titlepartial"        (set "titlepartial=%~2"       & shift & shift & goto :parse_args)
 REM We hit this point if an argument is not recognized
-set "returncode=5"
+set "returncode=6"
 :after_args
 if "%verysilent%"=="1" set "silent=1"
 if "%ensure%"=="1" set "retry=1"
@@ -175,7 +175,7 @@ if "%logs%"=="1" (
 )
 
 if not exist "%temp%\pathkiller" mkdir "%temp%\pathkiller"
-set "results=%temp%\pathkiller\results.txt"
+set "results=%temp%\pathkiller\last_results.txt"
 del /f "%results%" >nul 2>&1
 
 if "%logs%"=="1" if not defined alreadyheader ((
@@ -185,7 +185,7 @@ if "%logs%"=="1" if not defined alreadyheader ((
     echo _________________________________________________________________________________________________
 )) >> "%logpath%"
 
-if "%returncode%"=="5" (
+if "%returncode%"=="6" (
     set "errorarg=%~1"
     goto :end
 )
@@ -209,7 +209,7 @@ if "%logs%"=="1" ((
     echo -
 )) >> "%logpath%"
 
-if not defined folders if not defined titles if not defined processes (set "returncode=2" & goto :end)
+if not defined folders if not defined titles if not defined processes (set "returncode=3" & goto :end)
 
 
 
@@ -228,7 +228,7 @@ for %%F in (%folders%) do (
 )
 REM Remove the trailing " -or " from the filter string
 set "filter=%filter:~0,-4%"
-if not defined filter (set "returncode=3" & goto :end)
+if not defined filter (set "returncode=4" & goto :end)
 if "%verysilent%" neq "1" echo Searching processes by path...
 if "%logs%"=="1" echo Searching processes by path...   >> "%logpath%"
 call :searchfolders
@@ -262,14 +262,14 @@ call :searchprocesses
 
 REM   ========================== VERIFY ===============================
 
-REM Clear results.txt from lines that are not a result 
+REM Clear last_results.txt from lines that are not a result 
 if exist "%results%" (powershell -NoProfile -ExecutionPolicy Bypass -Command "$tempFile = [System.IO.Path]::GetTempFileName(); Get-Content '%results%' -Encoding UTF8 | Where-Object { ($_ -split ',').Count -gt 8 } | Set-Content $tempFile -Encoding UTF8; Move-Item $tempFile '%results%' -Force")
 for %%i in ("%results%") do if %%~zi NEQ 0 (
     set "returncode=0"
 ) else (
-    set "returncode=1"
+    set "returncode=2"
 )
-if "%returncode%"=="1" goto :end
+if "%returncode%"=="2" goto :end
 if "%silent%" neq "1" call :writeresultsconsole
 echo this line prevent previous line not working >nul
 if "%logs%"=="1" call :writeresultslogs
@@ -283,8 +283,6 @@ if "%checkonly%"=="1" goto :end
 REM   ========================= KILLING ===============================
 
 set /a "attempt=1"
-set /a "maxensure=4"
-if defined titles if not defined titleim set /a "maxensure=8"
 if "%verysilent%" neq "1" echo Killing processes...
 if "%logs%"=="1" (echo - >> "%logpath%" & echo Killing processes... >> "%logpath%")
 :kill
@@ -292,8 +290,9 @@ if "%attempt%" NEQ "1" if "%silent%" NEQ "1" echo attempt = "%attempt%"
 if "%logs%"=="1" echo Attempt = "%attempt%"  >> "%logpath%"
 REM That next line kill all results by pid
 for /f "tokens=2 delims=," %%a in (%results%) do taskkill /f /pid %%a >nul 2>&1
-del /f "%results%"
 :recheck
+del /f "%results%"
+if exist "%results%" (set "returncode=7" & goto :end)
 timeout /t 1 >nul
 if defined folders call :searchfolders
 echo this line prevent previous line not working >nul
@@ -301,19 +300,19 @@ if defined titles call :searchtitles
 echo this line prevent previous line not working >nul
 if defined processes call :searchprocesses
 echo this line prevent previous line not working >nul
-REM Clear results.txt from lines that are not a result 
+REM Clear last_results.txt from lines that are not a result 
 if exist "%results%" (powershell -NoProfile -ExecutionPolicy Bypass -Command "$tempFile = [System.IO.Path]::GetTempFileName(); Get-Content '%results%' -Encoding UTF8 | Where-Object { ($_ -split ',').Count -gt 8 } | Set-Content $tempFile -Encoding UTF8; Move-Item $tempFile '%results%' -Force")
 echo this line prevent previous line not working >nul
-for %%i in ("%results%") do if %%~zi NEQ 0 (set "returncode=4") else (set "returncode=0")
+for %%i in ("%results%") do if %%~zi NEQ 0 (set "returncode=5") else (set "returncode=0")
 if "%retry%"=="1" (
     set /a attempt+=1
     if "%ensure%"=="1" if not defined stop (
-        if %attempt% lss %maxensure% (goto :kill) else (timeout /t 4 >nul & set "stop=1" & goto :recheck)
+        if %attempt% lss 8 (goto :kill) else (timeout /t 4 >nul & set "stop=1" & goto :recheck)
     ) else (
         if %attempt% lss 5 goto :kill
     )
 )
-if "%logs%"=="1" echo - >> "%logpath%"
+
 
 
 
@@ -322,21 +321,24 @@ REM   ====================== ENDING ===============================
 
 :end
 if not defined returncode set "returncode=1"
+if "%logs%"=="1" echo - >> "%logpath%"
 
 if "%verysilent%" neq "1" (
     echo.
     if "%returncode%"=="0" if "%checkonly%"=="0" echo  RESULT Code %returncode% : All processes have been killed.
     if "%returncode%"=="0" if "%checkonly%"=="1" echo  RESULT Code %returncode% : Matching processes found.
-    if "%returncode%"=="1"                       echo  RESULT Code %returncode% : Not any matching process found.
-    if "%returncode%"=="2"                       echo  RESULT Code %returncode% : [Error] - Variables %%folders%%, %%titles%% and %%processes%% are all empty.
-    if "%returncode%"=="3"                       echo  RESULT Code %returncode% : [Error] - No valid filter created related to %%folders%% - maybe check arguments synthax.
-    if "%returncode%"=="4" if "%silent%"=="0"    echo  RESULT Code %returncode% : [Error] - Failed to close those processes : & call :writeresultsconsole
-    if "%returncode%"=="4" if "%silent%"=="1"    echo  RESULT Code %returncode% : [Error] - Failed to close some processes.
-    if "%returncode%"=="5"                       echo  RESULT Code %returncode% : [Error] - Argument not recognized : %errorarg%
+    if "%returncode%"=="1"                       echo  RESULT Code %returncode% : Unhandled error.
+    if "%returncode%"=="2"                       echo  RESULT Code %returncode% : Not any matching process found.
+    if "%returncode%"=="3"                       echo  RESULT Code %returncode% : [Error] - Variables %%folders%%, %%titles%% and %%processes%% are all empty.
+    if "%returncode%"=="4"                       echo  RESULT Code %returncode% : [Error] - No valid filter created related to %%folders%% - maybe check arguments synthax.
+    if "%returncode%"=="5" if "%silent%"=="0"    echo  RESULT Code %returncode% : [Error] - Failed to close those processes : & call :writeresultsconsole
+    if "%returncode%"=="5" if "%silent%"=="1"    echo  RESULT Code %returncode% : [Error] - Failed to close some processes.
+    if "%returncode%"=="6"                       echo  RESULT Code %returncode% : [Error] - Argument not recognized : %errorarg%
+    if "%returncode%"=="7"                       echo  RESULT Code %returncode% : [Error] - Results file is locked in %%Temp%%\pathkiller\last_results.txt
 )
 
-if "%logs%"=="1" if "%returncode%"=="5" (echo. >> "%logpath%" & echo FINAL RETURN CODE : %returncode% - [Error] - Argument not recognized : %errorarg% >> "%logpath%" & echo. >> "%logpath%")
-if "%logs%"=="1" if "%returncode%" neq "5" ((
+if "%logs%"=="1" if "%returncode%"=="6" (echo. >> "%logpath%" & echo FINAL RETURN CODE : %returncode% - [Error] - Argument not recognized : %errorarg% >> "%logpath%" & echo. >> "%logpath%")
+if "%logs%"=="1" if "%returncode%" neq "6" ((
     echo VARIABLES AT END :
     echo logpath = %logpath%
     echo folders = %folders%
@@ -349,14 +351,16 @@ if "%logs%"=="1" if "%returncode%" neq "5" ((
     echo FINAL RETURN CODE :
     if "%returncode%"=="0" if "%checkonly%"=="0" echo %returncode% - All processes have been killed.
     if "%returncode%"=="0" if "%checkonly%"=="1" echo %returncode% - Matching processes found.
-    if "%returncode%"=="1"                       echo %returncode% - Not any matching process found.
-    if "%returncode%"=="2"                       echo %returncode% - [Error] - Variables %%folders%%, %%titles%% and %%processes%% are all empty.
-    if "%returncode%"=="3"                       echo %returncode% - [Error] - No valid filter created related to %%folders%% - maybe check arguments synthax.
-    if "%returncode%"=="4"                       echo %returncode% - [Error] - Failed to close those processes :
-    if "%returncode%" neq "4" echo -
+    if "%returncode%"=="1"                       echo %returncode% - Unhandled error.
+    if "%returncode%"=="2"                       echo %returncode% - Not any matching process found.
+    if "%returncode%"=="3"                       echo %returncode% - [Error] - Variables %%folders%%, %%titles%% and %%processes%% are all empty.
+    if "%returncode%"=="4"                       echo %returncode% - [Error] - No valid filter created related to %%folders%% - maybe check arguments synthax.
+    if "%returncode%"=="5"                       echo %returncode% - [Error] - Failed to close those processes :
+    if "%returncode%"=="7"                       echo %returncode% - [Error] - last_results.txt file is locked in %%Temp%%\pathkiller
+    if "%returncode%" neq "5" echo -
 )) >> "%logpath%"
 
-if "%logs%"=="1" if "%returncode%"=="4" (call :writeresultslogs & echo -  >> "%logpath%")
+if "%logs%"=="1" if "%returncode%"=="5" (call :writeresultslogs & echo -  >> "%logpath%")
 if "%disablereturncodes%"=="1" (
     if "%silent%" neq "1" (echo  BUT 'disablereturncodes' is enabled so this script will return 0 anyway.)
     if "%logs%"=="1" (echo  BUT 'disablereturncodes' is enabled so this script will return 0 anyway. >> "%logpath%" & echo. >> "%logpath%")
