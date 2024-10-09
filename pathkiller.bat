@@ -334,7 +334,7 @@ if "%verysilent%" neq "1" (
     echo.
     if "%returncode%"=="0" if "%checkonly%"=="0" echo  RESULT Code %returncode% : All processes have been killed.
     if "%returncode%"=="0" if "%checkonly%"=="1" echo  RESULT Code %returncode% : Matching processes found.
-    if "%returncode%"=="1"                       echo  RESULT Code %returncode% : Unhandled error.
+    if "%returncode%"=="1"                       echo  RESULT Code %returncode% : [CRITICAL] - Unhandled error.
     if "%returncode%"=="2"                       echo  RESULT Code %returncode% : Not any matching process found.
     if "%returncode%"=="3"                       echo  RESULT Code %returncode% : [Error] - Variables %%folders%%, %%titles%% and %%processes%% are all empty.
     if "%returncode%"=="4"                       echo  RESULT Code %returncode% : [Error] - No valid filter created related to %%folders%% - maybe check arguments synthax.
@@ -358,7 +358,7 @@ if "%logs%"=="1" if "%returncode%" neq "6" ((
     echo FINAL RETURN CODE :
     if "%returncode%"=="0" if "%checkonly%"=="0" echo %returncode% - All processes have been killed.
     if "%returncode%"=="0" if "%checkonly%"=="1" echo %returncode% - Matching processes found.
-    if "%returncode%"=="1"                       echo %returncode% - Unhandled error.
+    if "%returncode%"=="1"                       echo %returncode% - [CRITICAL] - Unhandled error.
     if "%returncode%"=="2"                       echo %returncode% - Not any matching process found.
     if "%returncode%"=="3"                       echo %returncode% - [Error] - Variables %%folders%%, %%titles%% and %%processes%% are all empty.
     if "%returncode%"=="4"                       echo %returncode% - [Error] - No valid filter created related to %%folders%% - maybe check arguments synthax.
