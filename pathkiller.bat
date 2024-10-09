@@ -27,13 +27,14 @@ set "logpath=%temp%\pathkiller\pathkiller.log"     :: Logfile location
 set "logs=1"                                       :: Enable logs
 set "recursive=1"                                  :: If folders specified, search into subfolders
 set "retry=1"                                      :: Kill again if processes still runing -max 4 attemps, 1s loop-
+set "ensure=1"                                     :: Force retry -8 attempts, 1s loop-
 set "titleim="                                     :: If titles specified, filter by process name - eg : cmd.exe
 set "titlepartial=1"                               :: Search partial title and case unsensitive - 0 mean exact title
 set "checkonly=0"                                  :: Only search without killing
 set "endpause=0"                                   :: Pause script at the end to let you read
 set "disablereturncodes=0"                         :: Final return code '0' everytime
-set "silent=0"                                     :: Hide output of tasklist commands
-set "verysilent=0"                                 :: Hide everything
+set "silent=0"                                     :: Hide output of tasklist commands in console
+set "verysilent=0"                                 :: Hide everything in console
 
 
 
@@ -122,12 +123,14 @@ if /i "%~1"=="/verysilent"          (set "verysilent=%~2"         & shift & shif
 if /i "%~1"=="/logs"                (set "logs=%~2"               & shift & shift & goto :parse_args)
 if /i "%~1"=="/logpath"             (set "logpath=%~2"            & shift & shift & goto :parse_args)
 if /i "%~1"=="/retry"               (set "retry=%~2"              & shift & shift & goto :parse_args)
+if /i "%~1"=="/ensure"              (set "ensure=%~2"             & shift & shift & goto :parse_args)
 if /i "%~1"=="/titleim"             (set "titleim=%~2"            & shift & shift & goto :parse_args)
 if /i "%~1"=="/titlepartial"        (set "titlepartial=%~2"       & shift & shift & goto :parse_args)
 REM We hit this point if an argument is not recognized
 set "returncode=5"
 :after_args
 if "%verysilent%"=="1" set "silent=1"
+if "%ensure%"=="1" set "retry=1"
 
 
 
@@ -271,6 +274,7 @@ if "%silent%" neq "1" call :writeresultsconsole
 echo this line prevent previous line not working >nul
 if "%logs%"=="1" call :writeresultslogs
 echo this line prevent previous line not working >nul
+echo this line prevent previous line not working >nul
 if "%checkonly%"=="1" goto :end
 
 
@@ -279,6 +283,8 @@ if "%checkonly%"=="1" goto :end
 REM   ========================= KILLING ===============================
 
 set /a "attempt=1"
+set /a "maxensure=4"
+if defined titles if not defined titleim set /a "maxensure=8"
 if "%verysilent%" neq "1" echo Killing processes...
 if "%logs%"=="1" (echo - >> "%logpath%" & echo Killing processes... >> "%logpath%")
 :kill
@@ -287,6 +293,7 @@ if "%logs%"=="1" echo Attempt = "%attempt%"  >> "%logpath%"
 REM That next line kill all results by pid
 for /f "tokens=2 delims=," %%a in (%results%) do taskkill /f /pid %%a >nul 2>&1
 del /f "%results%"
+:recheck
 timeout /t 1 >nul
 if defined folders call :searchfolders
 echo this line prevent previous line not working >nul
@@ -298,9 +305,13 @@ REM Clear results.txt from lines that are not a result
 if exist "%results%" (powershell -NoProfile -ExecutionPolicy Bypass -Command "$tempFile = [System.IO.Path]::GetTempFileName(); Get-Content '%results%' -Encoding UTF8 | Where-Object { ($_ -split ',').Count -gt 8 } | Set-Content $tempFile -Encoding UTF8; Move-Item $tempFile '%results%' -Force")
 echo this line prevent previous line not working >nul
 for %%i in ("%results%") do if %%~zi NEQ 0 (set "returncode=4") else (set "returncode=0")
-if "!returncode!"=="4" if "%retry%"=="1" if "%attempt%" NEQ "4" (
+if "%retry%"=="1" (
     set /a attempt+=1
-    goto :kill
+    if "%ensure%"=="1" if not defined stop (
+        if %attempt% lss %maxensure% (goto :kill) else (timeout /t 4 >nul & set "stop=1" & goto :recheck)
+    ) else (
+        if %attempt% lss 5 goto :kill
+    )
 )
 if "%logs%"=="1" echo - >> "%logpath%"
 
