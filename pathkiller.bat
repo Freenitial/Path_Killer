@@ -49,6 +49,11 @@ Opening this script without any arg : full default configuration above applied, 
 
 OPTIONNAL : CALL WITH ARGS TO REPLACE CORRESPONDING DEFAULT CONFIG ABOVE (/folder, /title and /process can be used many times)
 In this case make sure %CD% is already in pathkiller.bat directory to let cmd interpret arguments correctly
+
+To know :
+/verysilent 1 = override silent
+/ensure 1     = override retry
+
 How to launch with args : pathkiller.bat /folder "C:\first\path" /folder "C:\second path" /endpause 1
 
 How to nice launch with cmd /c :
@@ -72,11 +77,13 @@ cmd /c pathkiller.bat ^
 
 Return codes :
      0 = All processes have been found and killed
-     1 = Not any process to kill was found
-     2 = Variables %folders%, %titles% and %processes% are all empty
-     3 = No valid filter created (related to %folders% - maybe check arguments synthax)
-     4 = Failed to close some processes
-     5 = Unrecognized argument
+     1 = Unhandled error
+     2 = Not any matching process was found
+     3 = Variables %folders%, %titles% and %processes% are all empty
+     4 = No valid filter created (related to %folders% - maybe check arguments synthax)
+     5 = Failed to close some processes
+     6 = Unrecognized argument
+     7 = Results file is locked in %%Temp%%\pathkiller\last_results.txt
 
 %temp% from user/admin     =  %localappdata%\Temp
 %temp% from system account =  %windir%\Temp  OR  %windir%\System32\config\systemprofile\AppData\Local\Temp
